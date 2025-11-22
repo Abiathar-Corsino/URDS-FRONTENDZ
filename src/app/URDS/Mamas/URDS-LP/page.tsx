@@ -1,18 +1,28 @@
 "use client";
 
 import { useState } from 'react';
-import { Bell, Clock, FileText, Plus, Pencil, Eye, Trash2, Megaphone, Atom, ListTodo, Shield, Home, X, Calendar } from 'lucide-react';
+import { Clock, FileText, Plus, Pencil, Eye, Trash2, Megaphone, Atom, ListTodo, Shield, X, Calendar, Search, ChevronDown, Filter } from 'lucide-react';
 
 const sidebarItems = [
-  { icon: Atom, label: 'Research Page', color: 'from-cyan-400 to-blue-500', active: false },
+  { icon: Atom, label: 'Research', color: 'from-cyan-400 to-blue-500', active: false },
   { icon: Megaphone, label: 'Announcements', color: 'from-yellow-400 to-orange-500', active: true },
-  { icon: ListTodo, label: 'Submissions', color: 'from-purple-400 to-purple-600', active: false },
+  { icon: ListTodo, label: 'Proposals', color: 'from-purple-400 to-purple-600', active: false },
   { icon: Shield, label: 'Compliance', color: 'from-blue-400 to-blue-600', active: false },
 ];
+
+const filterOptions = ['All', 'Today', 'This Week', 'This Month', 'This Year', 'Specific Date'];
 
 export default function URDSDashboard() {
   const [activeTab, setActiveTab] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isAnnouncementActive, setIsAnnouncementActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+const [specificYear, setSpecificYear] = useState(new Date().getFullYear()); // number
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -20,6 +30,45 @@ export default function URDSDashboard() {
     deadline: '',
     guidelines: ''
   });
+
+  const handleFilterSelect = (filter: string) => {
+    if (filter === 'Specific Date') {
+      setIsDateModalOpen(true);
+    } else {
+      setSelectedFilter(filter);
+    }
+    setIsFilterOpen(false);
+  };
+
+const handleSpecificYearSubmit = () => {
+  setSelectedFilter(specificYear.toString()); // convert number to string
+  setIsDateModalOpen(false);
+};
+
+
+  const handleAnnouncementClick = () => {
+    setIsAnnouncementActive(!isAnnouncementActive);
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditMode(true);
+    setFormData({
+      title: 'Research Proposals for Academic Year 2024-2025',
+      description: 'The University Research and Development Services (URDS) is now accepting Research Proposals for the Academic Year 2024-2025. Please review the guidelines and submit your proposal before the deadline.',
+      startDate: '2025-10-12',
+      deadline: '2025-10-13',
+      guidelines: ''
+    });
+    setIsModalOpen(true);
+    setIsAnnouncementActive(false);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('Delete announcement');
+    setIsAnnouncementActive(false);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -86,7 +135,31 @@ export default function URDSDashboard() {
               <span className="absolute -top-2 left-4 bg-red-500 text-white text-xs px-3 py-1 rounded-full z-10">
                 New Announcement
               </span>
-              <div className="bg-gradient-to-r from-gray-50 to-orange-50 rounded-2xl p-4 flex items-center gap-4 border border-gray-100">
+              <div 
+                onClick={handleAnnouncementClick}
+                className={`relative bg-gradient-to-r from-gray-50 to-orange-50 rounded-2xl p-4 flex items-center gap-4 border border-gray-100 cursor-pointer transition-all duration-300 ${
+                  isAnnouncementActive 
+                    ? 'brightness-90 ring-2 ring-blue-400' 
+                    : 'hover:brightness-95'
+                }`}
+              >
+                {isAnnouncementActive && (
+                  <>
+                    <div 
+                      onClick={handleEdit}
+                      className="absolute -top-3 right-20 bg-white rounded-xl shadow-lg p-3 z-20 hover:bg-blue-50 hover:scale-110 transition-all duration-200 cursor-pointer border border-gray-100"
+                    >
+                      <Pencil className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div 
+                      onClick={handleDelete}
+                      className="absolute -top-3 right-6 bg-white rounded-xl shadow-lg p-3 z-20 hover:bg-red-50 hover:scale-110 transition-all duration-200 cursor-pointer border border-gray-100"
+                    >
+                      <Trash2 className="w-5 h-5 text-red-500" />
+                    </div>
+                  </>
+                )}
+
                 <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl p-3 text-white text-center min-w-16">
                   <div className="text-xs">TODAY</div>
                   <div className="text-xl font-bold">17:00</div>
@@ -126,12 +199,58 @@ export default function URDSDashboard() {
                   Submissions
                 </button>
                 <button 
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    setIsEditMode(false);
+                    setFormData({ title: '', description: '', startDate: '', deadline: '', guidelines: '' });
+                    setIsModalOpen(true);
+                  }}
                   className="group flex items-center gap-2 text-gray-600 hover:text-white bg-gray-100 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 px-4 py-2 rounded-full transition-all duration-500 ease-in-out hover:shadow-lg hover:shadow-blue-500/30"
                 >
                   <Plus className="w-4 h-4 transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
                   <span className="text-sm">Create New Call For Proposals</span>
                 </button>
+              </div>
+            </div>
+
+            {/* Search Bar and Filter */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search proposals..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div className="relative">
+                <button
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className="flex items-center gap-3 px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors min-w-48"
+                >
+                  <Filter className="w-5 h-5 text-gray-500" />
+                  <span className="text-gray-700 text-sm flex-1 text-left">{selectedFilter}</span>
+                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${isFilterOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isFilterOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-20">
+                    {filterOptions.map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => handleFilterSelect(option)}
+                        className={`w-full px-4 py-3 text-left text-sm hover:bg-blue-50 transition-colors flex items-center gap-2 ${
+                          selectedFilter === option ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                        }`}
+                      >
+                        {option === 'Specific Date' && <Calendar className="w-4 h-4" />}
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -154,7 +273,9 @@ export default function URDSDashboard() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td colSpan={5} className="text-center py-8 text-gray-400">No proposals yet. Click "Create New Call For Proposals" to add one.</td>
+                      <td colSpan={5} className="text-center py-8 text-gray-400">
+                        No proposals yet. Click "Create New Call For Proposals" to add one.
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -164,24 +285,23 @@ export default function URDSDashboard() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Create/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsModalOpen(false)}
           ></div>
           
-          {/* Modal Content */}
           <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-white" />
+                  {isEditMode ? <Pencil className="w-5 h-5 text-white" /> : <Plus className="w-5 h-5 text-white" />}
                 </div>
-                <h2 className="text-xl font-bold text-gray-800">Create New Call For Proposals</h2>
+                <h2 className="text-xl font-bold text-gray-800">
+                  {isEditMode ? 'Edit Announcement' : 'Create New Call For Proposals'}
+                </h2>
               </div>
               <button 
                 onClick={() => setIsModalOpen(false)}
@@ -191,13 +311,11 @@ export default function URDSDashboard() {
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6">
               <div className="space-y-5">
-                {/* Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Announcement Title <span className="text-red-500">*</span>
+                    Proposal Title <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -209,7 +327,6 @@ export default function URDSDashboard() {
                   />
                 </div>
 
-                {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description <span className="text-red-500">*</span>
@@ -224,39 +341,33 @@ export default function URDSDashboard() {
                   />
                 </div>
 
-                {/* Dates Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Start Date <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        name="startDate"
-                        value={formData.startDate}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                      />
-                    </div>
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={formData.startDate}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Deadline <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        name="deadline"
-                        value={formData.deadline}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                      />
-                    </div>
+                    <input
+                      type="date"
+                      name="deadline"
+                      value={formData.deadline}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    />
                   </div>
                 </div>
 
-                {/* Guidelines */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Guidelines / Attachments
@@ -270,7 +381,6 @@ export default function URDSDashboard() {
               </div>
             </div>
 
-            {/* Modal Footer */}
             <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -282,11 +392,70 @@ export default function URDSDashboard() {
                 onClick={handleSubmit}
                 className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl shadow-lg shadow-emerald-500/30 transition-all"
               >
-                Create Proposal
+                {isEditMode ? 'Save Changes' : 'Create Proposal'}
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Specific Date Modal */}
+      {isDateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+  <div 
+    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+    onClick={() => setIsDateModalOpen(false)}
+  ></div>
+  
+  <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4">
+    {/* Header */}
+    <div className="flex items-center justify-between p-6 border-b border-gray-100">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+          <Calendar className="w-5 h-5 text-white" />
+        </div>
+        <h2 className="text-xl font-bold text-gray-800">Select Year</h2>
+      </div>
+      <button 
+        onClick={() => setIsDateModalOpen(false)}
+        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+      >
+        <X className="w-5 h-5 text-gray-500" />
+      </button>
+    </div>
+
+    {/* Year Input */}
+    <div className="p-6">
+      <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+      <input
+        type="number"
+        min="2000"
+        max={new Date().getFullYear() + 10} // optional, limit future years
+        value={specificYear}
+        onChange={(e) => setSpecificYear(Number(e.target.value))}
+        placeholder="e.g., 2025"
+        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+      />
+    </div>
+
+    {/* Footer Buttons */}
+    <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100">
+      <button
+        onClick={() => setIsDateModalOpen(false)}
+        className="px-6 py-2.5 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        onClick={handleSpecificYearSubmit}
+        className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/30 transition-all"
+      >
+        Apply Filter
+      </button>
+    </div>
+  </div>
+</div>
+
       )}
     </div>
   );

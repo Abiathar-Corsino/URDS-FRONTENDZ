@@ -17,16 +17,15 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "baseUrl": "src",  // ✅ Added baseUrl pointing to src
+    "paths": {
+      "@/*": ["*"]      // ✅ Updated so "@/app/..." resolves to src/app/...
+    },
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
+    ]
   },
   "include": [
     "next-env.d.ts",
