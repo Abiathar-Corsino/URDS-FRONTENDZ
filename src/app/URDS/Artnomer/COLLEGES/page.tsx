@@ -4,10 +4,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Sidebar from "@/components/CollegeAnnouncements/Sidebar";
-import SearchHeader from "@/components/CollegeAnnouncements/SearchHeader";
-import CollegeGrid, { College } from "@/components/CollegeAnnouncements/CollegeGrid";
-import CollegeModal from "@/components/CollegeAnnouncements/CollegeModal";
+import Sidebar from "@/components/CollegeSubmissions/Sidebar";
+import SearchHeader from "@/components/CollegeSubmissions/SearchHeader";
+import CollegeGrid, { College } from "@/components/CollegeSubmissions/CollegeGrid";
+import CollegeModal from "@/components/CollegeSubmissions/CollegeModal";
 
 const UPLOADED_LOGO = "/mnt/data/bd78d472-b831-4539-9927-2bfbf2621703.png";
 
