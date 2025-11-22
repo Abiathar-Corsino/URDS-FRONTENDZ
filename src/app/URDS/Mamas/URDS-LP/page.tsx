@@ -6,7 +6,7 @@ import { Bell, Clock, FileText, Plus, Pencil, Eye, Trash2, Megaphone, Atom, List
 const sidebarItems = [
   { icon: Atom, label: 'Research', color: 'from-cyan-400 to-blue-500', active: false },
   { icon: Megaphone, label: 'Announcements', color: 'from-yellow-400 to-orange-500', active: true },
-  { icon: ListTodo, label: 'Proposals', color: 'from-purple-400 to-purple-600', active: false },
+  { icon: ListTodo, label: 'Submissions', color: 'from-purple-400 to-purple-600', active: false },
   { icon: Shield, label: 'Compliance', color: 'from-blue-400 to-blue-600', active: false },
 ];
 
