@@ -246,7 +246,7 @@ const ThesisEvaluationSummary: React.FC = () => {
                           </div>
                         </div>
                       </div>
-
+                        <div></div>
                       {/* Department */}
                       <div>
                         <div className="text-xs text-gray-500 mb-2">Department</div>
