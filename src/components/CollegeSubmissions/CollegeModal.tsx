@@ -32,13 +32,9 @@ export default function CollegeModal({ college, onClose, defaultLogo }: CollegeM
 
   // Fetch departments when college changes
   useEffect(() => {
-    if (!college) {
-      setDepartments([]);
-      return;
-    }
-
+    
     // If departments are already included in the college object
-    if (college.departments && college.departments.length > 0) {
+    if (college?.departments && college.departments.length > 0) {
       setDepartments(college.departments);
       return;
     }
@@ -47,7 +43,14 @@ export default function CollegeModal({ college, onClose, defaultLogo }: CollegeM
     async function fetchDepartments() {
       setLoading(true);
       setError(null);
-      
+
+      // Add null check for college
+      if (!college) {
+        setError("No college selected");
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch(`/api/colleges/${college.id}/departments`, {
           cache: "no-store",
