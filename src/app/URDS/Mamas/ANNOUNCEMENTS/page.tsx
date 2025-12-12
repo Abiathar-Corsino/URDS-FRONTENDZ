@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Bell, Calendar, FileText, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import AnnouncementBanner from '@/components/urds-director/AnnouncementBanner';
 import URDSSidebar from '@/components/urds-director/sidebar';
 
@@ -20,7 +20,6 @@ const AnnouncementInterface = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [allAnnouncements, setAllAnnouncements] = useState<Announcement[]>([
-    // Example data
     {
       id: '1',
       title: 'Research Proposals for Academic Year 2024-2025',
@@ -74,35 +73,41 @@ const AnnouncementInterface = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-orange-50 text-gray-800">
-            <URDSSidebar />
-      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <URDSSidebar />
+      <div className="w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
             <h1 className="text-3xl font-bold text-gray-900">ANNOUNCEMENTS</h1>
-            <div className="relative">
+            <div className="relative w-full sm:w-80">
               <input
                 type="text"
                 placeholder="Search Announcement"
                 value={searchQuery}
-                onChange={(e)=>setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
             </div>
           </div>
-          <div className="flex items-center justify-between">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="relative w-full sm:w-auto">
               <select
                 value={selectedFilter}
-                onChange={e => setSelectedFilter(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-lg pl-4 pr-10 py-2.5 text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-gray-50"
+                onChange={(e) => setSelectedFilter(e.target.value)}
+                className="appearance-none bg-white border border-gray-300 rounded-lg pl-4 pr-10 py-2.5 text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-gray-50 w-full sm:w-auto"
               >
-                {filterOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {filterOptions.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </select>
-              <ChevronDown className="absolute right-3 top-3 text-gray-400" size={20}/>
+              <ChevronDown className="absolute right-3 top-3 text-gray-400" size={20} />
             </div>
-            <div className="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm">{allAnnouncements.length}+</div>
+            <div className="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm">
+              {allAnnouncements.length}+
+            </div>
           </div>
         </div>
 
@@ -114,7 +119,7 @@ const AnnouncementInterface = () => {
               <p className="text-base">Announcements will appear here when available</p>
             </div>
           ) : (
-            announcements.map(a => (
+            announcements.map((a) => (
               <AnnouncementBanner
                 key={a.id}
                 title={a.title}
